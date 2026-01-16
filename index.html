@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مديرية التجهيز العمومي - النعامة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004d40;
+            --secondary: #ffc107;
+            --accent: #00796b;
+            --text-dark: #333;
+            --bg-light: #f4f6f8;
+            --white: #ffffff;
+            --danger: #dc3545;
+            --success: #28a745;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 60px;
+            color: var(--text-dark);
+        }
+
+        * { box-sizing: border-box; outline: none; }
+
+        /* --- الهيدر --- */
+        header {
+            background: linear-gradient(135deg, #004d40, #00796b);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .logo h1 { font-size: 1.3rem; margin: 0; font-weight: 800; }
+        .logo span { font-size: 0.85rem; opacity: 0.9; display: block; font-weight: 300; }
+        
+        .top-controls { display: flex; gap: 10px; }
+        .ctrl-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+        .ctrl-btn:hover { background: rgba(255,255,255,0.25); }
+        
+        body.admin-mode .admin-toggle {
+            background: var(--secondary);
+            color: #000;
+            border-color: var(--secondary);
+            font-weight: bold;
+        }
+
+        /* --- نظام العرض --- */
+        .view { display: none; animation: fadeIn 0.4s ease; padding-top: 20px; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- الصفحة الرئيسية --- */
+        .hero {
+            background: linear-gradient(135deg, rgba(0, 77, 64, 0.95), rgba(0, 121, 107, 0.9)), url('https://picsum.photos/seed/naama/1600/900');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .hero h2 { font-size: 2.2rem; margin: 0 0 10px 0; font-weight: 800; }
+
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 60px; }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+            border-top: 5px solid var(--primary);
+        }
+        .card:hover { transform: translateY(-8px); }
+        .card-icon { font-size: 3.5rem; margin-bottom: 20px; display: block; }
+        .card h3 { font-size: 1.3rem; margin: 0 0 10px 0; color: var(--primary); }
+        .service-list { text-align: right; padding: 0; list-style: none; color: #666; }
+        .service-list li { margin-bottom: 8px; padding-right: 20px; position: relative; }
+        .service-list li::before { content: '•'; color: var(--secondary); font-weight: bold; position: absolute; right: 0; }
+
+        /* --- واجهة التطبيق --- */
+        .app-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
+        }
+        .app-header {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .app-header h3 { margin: 0; color: var(--primary); font-size: 1.3rem; }
+        .back-btn {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 6px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: inherit;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        .app-content { padding: 30px; overflow-x: auto; }
+
+        /* --- الجداول والنماذج --- */
+        .table-responsive { width: 100%; overflow-x: auto; margin-top: 20px; border: 1px solid #eee; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th, td { padding: 15px; text-align: right; border-bottom: 1px solid #eee; white-space: nowrap; vertical-align: top; }
+        th { background-color: var(--primary); color: white; font-weight: 600; }
+        tr:hover { background-color: #f1f1f1; }
+
+        /* --- عناصر المشرف --- */
+        .admin-controls { display: none; }
+        body.admin-mode .admin-controls { display: block; }
+        body.admin-mode .delete-btn, body.admin-mode .edit-btn, body.admin-mode .btn-upload { display: inline-block; }
+        body.admin-mode th:last-child, body.admin-mode td:last-child { width: 150px; }
+
+        /* --- نموذج الإضافة --- */
+        .admin-form {
+            background: #fff8e1;
+            border: 1px solid #ffeeba;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: none;
+        }
+        body.admin-mode .admin-form { display: block; animation: slideDown 0.3s; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .input-group { margin-bottom: 15px; }
+        .input-field {
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-family: inherit; box-sizing: border-box;
+        }
+        .add-btn {
+            width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+        }
+
+        /* --- أزرار الإجراءات --- */
+        .action-group { display: flex; gap: 5px; }
+        .btn-sm { padding: 4px 8px; border-radius: 4px; cursor: pointer; border: none; font-size: 0.75rem; color: white; display: none; }
+        .delete-btn { background: var(--danger); }
+        .edit-btn { background: var(--primary); }
+        .save-btn { background: var(--success); }
+
+        /* --- صور الورشات --- */
+        .img-preview { display: block; max-width: 100px; max-height: 100px; margin-top: 5px; border-radius: 4px; border: 1px solid #ddd; cursor: zoom-in; }
+        .file-input-hidden { display: none; }
+        .btn-upload {
+            background: #17a2b8; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; border: none; display: none;
+        }
+
+        /* --- حقول التعديل --- */
+        .edit-input { width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
+
+        /* --- شارات وشريط التقدم --- */
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; color: white; }
+        .bg-green { background: var(--success); }
+        .bg-yellow { background: var(--secondary); color: #333; }
+        .progress-wrap { width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; margin-top: 5px; }
+        .progress-fill { height: 100%; background: var(--secondary); }
+
+        /* --- زر العائمة للمعاينة --- */
+        .preview-back-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 2000;
+            cursor: pointer;
+            font-weight: bold;
+            display: none;
+            animation: popIn 0.3s;
+        }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        body.preview-mode .preview-back-btn { display: block; }
+
+        /* --- وضع المعاينة --- */
+        body.preview-mode header, 
+        body.preview-mode .hero, 
+        body.preview-mode .cards-grid, 
+        body.preview-mode .back-btn, 
+        body.preview-mode .admin-controls, 
+        body.preview-mode .footer { display: none !important; }
+        
+        body.preview-mode .container { max-width: 100%; padding: 0; margin: 0; }
+        body.preview-mode .view.active { display: block !important; }
+
+        /* --- التذييل --- */
+        .footer { background: #222; color: #aaa; text-align: center; padding: 20px; margin-top: 50px; font-size: 0.9rem; }
+
+        /* --- رسالة التنبيه --- */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
+            z-index: 2000;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* --- الطباعة --- */
+        @media print {
+            header, .hero, .cards-grid, .back-btn, .top-controls, .admin-form, .delete-btn, .edit-btn, .btn-upload, .footer, .preview-back-btn { display: none !important; }
+            body { background: white; color: black; -webkit-print-color-adjust: exact; }
+            .container { max-width: 100%; padding: 0; }
+            .view { display: none !important; }
+            .view.active { display: block !important; }
+            .app-container { box-shadow: none; border: none; margin: 0; }
+            .app-header { border-bottom: 2px solid black; background: none; padding: 10px 0; display: block !important; }
+            .app-header h3 { color: black; font-size: 18pt; }
+            .table-responsive { overflow: visible; border: 1px solid black; }
+            table { width: 100%; min-width: auto; font-size: 11pt; }
+            th, td { border: 1px solid black; padding: 8px; color: black; }
+            th { background-color: #ddd !important; color: black !important; -webkit-print-color-adjust: exact; font-size: 12pt; }
+            th:last-child, td:last-child { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- زر العودة العائم للمعاينة -->
+    <div class="preview-back-btn" onclick="exitPreview()">🏠 عودة للرئيسية</div>
+
+    <!-- الهيدر -->
+    <header>
+        <div class="container nav-wrapper">
+            <div class="logo">
+                <h1>مديرية التجهيز العمومي</h1>
+                <span>ولاية النعامة - الجزائر</span>
+            </div>
+            <div class="top-controls">
+                <button class="ctrl-btn admin-toggle" onclick="toggleAdmin()">🔒 وضع الزائر</button>
+                <button class="ctrl-btn" onclick="togglePreview()">👁️ عرض للطباعة (روتوشات)</button>
+                <button class="ctrl-btn" onclick="window.print()">🖨️ طباعة التقرير</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. الصفحة الرئيسية -->
+        <div id="home-view" class="view active">
+            <section class="hero">
+                <h2>بوابة المديرية الرقمية المتكاملة</h2>
+                <p>نظام متكامل لإدارة الموارد والمشاريع</p>
+            </section>
+
+            <div class="cards-grid">
+                <div class="card" onclick="navTo('admin')">
+                    <span class="card-icon">👥</span>
+                    <h3>الإدارة والوسائل</h3>
+                    <ul class="service-list">
+                        <li>إدارة شؤون الموظفين</li>
+                        <li>التسيير المالي والمحاسبي</li>
+                        <li>الوسائل المادية</li>
+                    </ul>
+                </div>
+                <div class="card" onclick="navTo('ops')">
+                    <span class="card-icon">🏗️</span>
+                    <h3>التسيير والعمليات</h3>
+                    <ul class="service-list">
+                        <li>متابعة دراسات المشاريع</li>
+                        <li>الإشراف على تنفيذ الأشغال</li>
+                        <li>المراقبة التقنية</li>
+                    </ul>
+                </div>
+                <div class="card" onclick="navTo('tenders')">
+                    <span class="card-icon">📜</span>
+                    <h3>الصفقات العمومية</h3>
+                    <ul class="service-list">
+                        <li>إعداد ملفات الاستشارات</li>
+                        <li>إعلان المناقصات</li>
+                        <li>تحليل العروض</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 2. مصلحة الإدارة -->
+        <div id="admin-view" class="view">
+            <div class="app-container">
+                <div class="app-header">
+                    <button class="back-btn" onclick="navTo('home')">➜ عودة</button>
+                    <h3>مصلحة الإدارة والوسائل</h3>
+                </div>
+                <div class="app-content">
+                    
+                    <div class="admin-form">
+                        <h4 style="margin:0 0 15px 0;">➕ إضافة موظف جديد</h4>
+                        <form onsubmit="addEmp(event)">
+                            <div class="input-group">
+                                <input type="text" id="empName" class="input-field" placeholder="الاسم واللقب" required>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="empJob" class="input-field" placeholder="المسمى الوظيفي" required>
+                            </div>
+                            <button type="submit" class="add-btn">إضافة للجدول</button>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="empTable">
+                            <thead>
+                                <tr>
+                                    <th>الاسم واللقب</th>
+                                    <th>المسمى الوظيفي</th>
+                                    <th>تاريخ الإدماج</th>
+                                    <th class="admin-controls">تحكم</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>محمد بن عودة</td>
+                                    <td>مهندس تطبيقي</td>
+                                    <td>2020-05-10</td>
+                                    <td class="admin-controls">
+                                        <div class="action-group">
+                                            <button class="btn-sm edit-btn" onclick="editRow(this)">✎ تعديل</button>
+                                            <button class="btn-sm delete-btn" onclick="delRow(this)">🗑️ حذف</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- 3. مصلحة العمليات -->
+        <div id="ops-view" class="view">
+            <div class="app-container">
+                <div class="app-header">
+                    <button class="back-btn" onclick="navTo('home')">➜ عودة</button>
+                    <h3>مصلحة التسيير والعمليات</h3>
+                </div>
+                <div class="app-content">
+                    
+                    <div class="admin-form">
+                        <h4 style="margin:0 0 15px 0;">➕ إضافة مشروع مع صورة</h4>
+                        <form onsubmit="addProj(event)">
+                            <div class="form-grid">
+                                <div class="input-group"><label>الولاية</label><input type="text" id="projWilaya" class="input-field" value="النعامة" readonly></div>
+                                <div class="input-group"><label>البلدية</label><input type="text" id="projCommune" class="input-field" placeholder="مثلاً: عين صفر" required></div>
+                                <div class="input-group"><label>اسم المشروع</label><input type="text" id="projName" class="input-field" placeholder="اسم المشروع" required></div>
+                                <div class="input-group"><label>حصة المشروع</label><input type="text" id="projCess" class="input-field" placeholder="رقم الحصة" required></div>
+                                <div class="input-group"><label>أمر إطلاق</label><input type="date" id="projStart" class="input-field"></div>
+                                <div class="input-group"><label>أمر توقف</label><input type="date" id="projStop" class="input-field"></div>
+                                <div class="input-group"><label>أمر استئناف</label><input type="date" id="projResume" class="input-field"></div>
+                                <div class="input-group"><label>مبلغ (د.ج)</label><input type="number" id="projAmount" class="input-field" placeholder="المبلغ" required></div>
+                                <div class="input-group"><label>نسبة التقدم %</label><input type="number" id="projProgress" class="input-field" value="0" min="0" max="100"></div>
+                                <div class="input-group" style="grid-column: 1 / -1px;"><label>ملاحظات عامة</label><textarea id="projNotes" class="input-field" placeholder="ملاحظات..." style="height: 60px;"></textarea></div>
+                                <div class="input-group"><label>صورة الورشة</label><input type="file" id="projImg" class="input-field" accept="image/*"></div>
+                            </div>
+                            <button type="submit" class="add-btn">إضافة المشروع</button>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="projTable">
+                            <thead>
+                                <tr>
+                                    <th>المشروع</th>
+                                    <th>المنطقة (البلدية)</th>
+                                    <th>الأوامر</th>
+                                    <th>المبلغ</th>
+                                    <th>نسبة التقدم</th>
+                                    <th>ملاحظات</th>
+                                    <th>صورة الورشة</th>
+                                    <th class="admin-controls">تحكم</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td data-val="ترميد الطريق الولائي 34">ترميد الطريق الولائي 34</td>
+                                    <td data-val="عين صفر - النعامة">عين صفر - النعامة</td>
+                                    <td>
+                                        <div class="pct-data" style="display:none">75</div>
+                                        <div>75%</div>
+                                        <div class="progress-wrap"><div class="progress-fill" style="width: 75%"></div></div>
+                                    </td>
+                                    <td data-val="15000000">15,000,000</td>
+                                    <td>جاري العمل بشكل ممتاز</td>
+                                    <td>لا يوجد</td>
+                                    <td class="img-cell">
+                                        <button class="btn-upload" onclick="triggerUpload(this)">📷 إضافة</button>
+                                        <input type="file" class="file-input-hidden" accept="image/*" onchange="showImg(this)">
+                                    </td>
+                                    <td class="admin-controls">
+                                        <div class="action-group">
+                                            <button class="btn-sm edit-btn" onclick="editRow(this)">✎ تعديل</button>
+                                            <button class="btn-sm delete-btn" onclick="delRow(this)">🗑️ حذف</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 4. مصلحة الصفقات -->
+        <div id="tenders-view" class="view">
+            <div class="app-container">
+                <div class="app-header">
+                    <button class="back-btn" onclick="navTo('home')">➜ عودة</button>
+                    <h3>مصلحة الصفقات العمومية</h3>
+                </div>
+                <div class="app-content">
+                    
+                    <div class="admin-form">
+                        <h4 style="margin:0 0 15px 0;">➕ إدراج صفقة</h4>
+                        <form onsubmit="addTend(event)">
+                            <div class="form-grid">
+                                <div class="input-group"><input type="text" id="tendNum" class="input-field" placeholder="رقم الصفقة" required></div>
+                                <div class="input-group"><input type="text" id="tendSub" class="input-field" placeholder="الموضوع" required></div>
+                                <div class="input-group"><input type="number" id="tendVal" class="input-field" placeholder="المبلغ" required></div>
+                            </div>
+                            <button type="submit" class="add-btn">إدراج</button>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="tendTable">
+                            <thead>
+                                <tr>
+                                    <th>الرقم</th>
+                                    <th>الموضوع</th>
+                                    <th>المبلغ</th>
+                                    <th>الحالة</th>
+                                    <th class="admin-controls">تحكم</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>24/2023</td>
+                                    <td>أشغال صيانة الطريق الولائي</td>
+                                    <td data-val="15000000">15,000,000</td>
+                                    <td><span class="badge bg-green">جارية</span></td>
+                                    <td class="admin-controls">
+                                        <div class="action-group">
+                                            <button class="btn-sm edit-btn" onclick="editRow(this)">✎ تعديل</button>
+                                            <button class="btn-sm delete-btn" onclick="delRow(this)">🗑️ حذف</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2023 مديرية التجهيز العمومي لولاية النعامة</p>
+    </div>
+
+    <div id="toast" class="toast">تمت العملية بنجاح</div>
+
+    <script>
+        let isAdmin = false;
+        const PASSWORD = "1234"; // كلمة المرور
+
+        function toggleAdmin() {
+            if (isAdmin) {
+                isAdmin = false;
+                document.body.classList.remove('admin-mode');
+                document.querySelector('.admin-toggle').innerHTML = '🔒 وضع الزائر';
+                showToast('تم تسجيل الخروج');
+            } else {
+                const pass = prompt("أدخل كلمة المرور:");
+                if (pass === PASSWORD) {
+                    isAdmin = true;
+                    document.body.classList.add('admin-mode');
+                    document.querySelector('.admin-toggle').innerHTML = '🔓 وضع المشرف';
+                    showToast('تم تفعيل وضع المشرف');
+                } else {
+                    showToast('كلمة المرور خاطئة!');
+                }
+            }
+        }
+
+        function togglePreview() {
+            document.body.classList.toggle('preview-mode');
+            if(document.body.classList.contains('preview-mode')) {
+                showToast('وضع المعاينة للطباعة');
+            } else {
+                showToast('العودة للعرض العادي');
+            }
+        }
+
+        function exitPreview() {
+            document.body.classList.remove('preview-mode');
+            navTo('home');
+        }
+
+        function navTo(pageId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(pageId + '-view').classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function delRow(btn) {
+            if(confirm('هل أنت متأكد من الحذف نهائياً؟')) {
+                const row = btn.closest('tr');
+                row.style.background = '#ffdddd';
+                setTimeout(() => {
+                    row.remove();
+                    showToast('تم الحذف بنجاح');
+                }, 300);
+            }
+        }
+
+        function editRow(btn) {
+            const row = btn.closest('tr');
+            if (btn.classList.contains('save-btn')) {
+                saveRow(row, btn);
+                return;
+            }
+
+            btn.classList.remove('edit-btn');
+            btn.classList.add('save-btn');
+            btn.innerHTML = '💾 حفظ';
+
+            const cells = row.querySelectorAll('td');
+            for(let i = 0; i < cells.length - 1; i++) {
+                const cell = cells[i];
+                if (cell.querySelector('.pct-data')) {
+                    const pct = cell.querySelector('.pct-data').innerText;
+                    cell.innerHTML = `<input type="number" class="edit-input" value="${pct}" min="0" max="100"> %`;
+                } else if (!cell.querySelector('img') && !cell.querySelector('input') && !cell.querySelector('button')) {
+                    const text = cell.innerText;
+                    const val = cell.getAttribute('data-val') || text;
+                    cell.innerHTML = `<input type="text" class="edit-input" value="${val}">`;
+                }
+            }
+        }
+
+        function saveRow(row, btn) {
+            btn.classList.remove('save-btn');
+            btn.classList.add('edit-btn');
+            btn.innerHTML = '✎ تعديل';
+
+            const cells = row.querySelectorAll('td');
+            for(let i = 0; i < cells.length - 1; i++) {
+                const cell = cells[i];
+                const input = cell.querySelector('input');
+                if (input) {
+                    const val = input.value;
+                    if (input.type === 'number') {
+                        let color = 'var(--secondary)';
+                        if(val > 50) color = '#28a745';
+                        else if(val < 30) color = '#17a2b8';
+                        cell.innerHTML = `
+                            <div class="pct-data" style="display:none">${val}</div>
+                            <div>${val}%</div>
+                            <div class="progress-wrap"><div class="progress-fill" style="width: ${val}%; background:${color}"></div></div>
+                        `;
+                    } else {
+                        cell.setAttribute('data-val', val);
+                        cell.innerText = val;
+                    }
+                }
+            }
+            showToast('تم حفظ التعديلات');
+        }
+
+        function showImg(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'img-preview';
+                    const oldImg = input.parentElement.querySelector('.img-preview');
+                    if(oldImg) oldImg.remove();
+                    input.parentElement.appendChild(img);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        function triggerUpload(btn) {
+            const input = btn.nextElementSibling;
+            input.click();
+        }
+
+        function addEmp(e) {
+            e.preventDefault();
+            const tbody = document.querySelector('#empTable tbody');
+            tbody.insertAdjacentHTML('beforeend', `
+                <tr>
+                    <td>${document.getElementById('empName').value}</td>
+                    <td>${document.getElementById('empJob').value}</td>
+                    <td>${new Date().toISOString().split('T')[0]}</td>
+                    <td class="admin-controls"><div class="action-group"><button class="btn-sm edit-btn" onclick="editRow(this)">✎</button><button class="btn-sm delete-btn" onclick="delRow(this)">🗑️</button></div></td>
+                </tr>
+            `);
+            document.getElementById('empName').value = '';
+            document.getElementById('empJob').value = '';
+            showToast('تمت إضافة الموظف');
+        }
+
+        function addProj(e) {
+            e.preventDefault();
+            const tbody = document.querySelector('#projTable tbody');
+            const row = document.createElement('tr');
+            
+            const fields = {
+                w: document.getElementById('projWilaya').value,
+                c: document.getElementById('projCommune').value,
+                n: document.getElementById('projName').value,
+                cess: document.getElementById('projCess').value,
+                s: document.getElementById('projStart').value || '-',
+                st: document.getElementById('projStop').value || '-',
+                res: document.getElementById('projResume').value || '-',
+                a: document.getElementById('projAmount').value,
+                pr: document.getElementById('projProgress').value,
+                notes: document.getElementById('projNotes').value,
+                fileInput: document.getElementById('projImg')
+            };
+
+            row.innerHTML = `
+                <td data-val="${fields.n}">${fields.n}</td>
+                <td data-val="${fields.c}">${fields.c}</td>
+                <td>
+                    <div class="pct-data" style="display:none">${fields.pr}</div>
+                    <div>${fields.pr}%</div>
+                    <div class="progress-wrap"><div class="progress-fill" style="width: ${fields.pr}%"></div></div>
+                </td>
+                <td data-val="${fields.a}">${parseInt(fields.a).toLocaleString()}</td>
+                <td>
+                    <small>بداية: ${fields.s}</small><br>
+                    <small>توقف: ${fields.st}</small><br>
+                    <small>استئناف: ${fields.res}</small>
+                </td>
+                <td>${fields.notes}</td>
+                <td class="img-cell">
+                    <button class="btn-upload" onclick="triggerUpload(this)">📷 إضافة</button>
+                    <input type="file" class="file-input-hidden" accept="image/*" onchange="showImg(this)">
+                </td>
+                <td class="admin-controls">
+                    <div class="action-group">
+                        <button class="btn-sm edit-btn" onclick="editRow(this)">✎</button>
+                        <button class="btn-sm delete-btn" onclick="delRow(this)">🗑️</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+
+            if(fields.fileInput.files && fields.fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const imgTag = `<img src="${evt.target.result}" class="img-preview">`;
+                    const cell = row.querySelector('.img-cell');
+                    cell.innerHTML = `<button class="btn-upload" onclick="triggerUpload(this)">📷 تغيير</button><input type="file" class="file-input-hidden" accept="image/*" onchange="showImg(this)">` + imgTag;
+                };
+                reader.readAsDataURL(fields.fileInput.files[0]);
+            }
+
+            // تفريغ الحقول
+            document.getElementById('projName').value = '';
+            document.getElementById('projCommune').value = '';
+            document.getElementById('projCess').value = '';
+            document.getElementById('projStart').value = '';
+            document.getElementById('projStop').value = '';
+            document.getElementById('projResume').value = '';
+            document.getElementById('projAmount').value = '';
+            document.getElementById('projProgress').value = '';
+            document.getElementById('projNotes').value = '';
+            document.getElementById('projImg').value = '';
+            showToast('تمت إضافة المشروع');
+        }
+
+        function addTend(e) {
+            e.preventDefault();
+            const tbody = document.querySelector('#tendTable tbody');
+            tbody.insertAdjacentHTML('beforeend', `
+                <tr>
+                    <td>${document.getElementById('tendNum').value}</td>
+                    <td>${document.getElementById('tendSub').value}</td>
+                    <td data-val="${document.getElementById('tendVal').value}">${parseInt(document.getElementById('tendVal').value).toLocaleString()}</td>
+                    <td><span class="badge bg-yellow">جديدة</span></td>
+                    <td class="admin-controls">
+                        <div class="action-group">
+                            <button class="btn-sm edit-btn" onclick="editRow(this)">✎ تعديل</button>
+                            <button class="btn-sm delete-btn" onclick="delRow(this)">🗑️ حذف</button>
+                        </div>
+                    </td>
+                </tr>
+            `);
+            document.getElementById('tendNum').value = '';
+            document.getElementById('tendSub').value = '';
+            document.getElementById('tendVal').value = '';
+            showToast('تمت إدراج الصفقة');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+    </script>
+
+</body>
+</html>
